@@ -33,6 +33,7 @@ This version extends the original linked list into a functional system:
 	Dual-Role Workflow & RBAC 👥---Implemented a secure authentication layer that bifurcates system access into Doctor and Nurse workstations.
 	Advanced Patient Profiling 📊---Enhanced data objects to include Clinical Conditions and Age, allowing for a more holistic triage process.
 	Defensive Input Handling 🛡️---Integrated buffer management (cin.clear()/cin.ignore()) to protect the system from malformed user input and logical deadlocks.
+	• (V3.1)🛡️ Granular Input Sanitization: Implemented range-based validation for patient telemetry (e.g., Age constrained between 0-150) and robust buffer management to prevent infinite loops caused by type-mismatching inputs.
 
 ---
 
@@ -50,6 +51,7 @@ The system adopts a priority-based insertion strategy with a look-ahead approach
 	•	v1.0 — Basic singly linked list implementation
 	•	v2.0 — Hospital emergency triage & queue management system
 	•	v3.0 — Security Governance & Role-Based Access Update
+	•		v3.1 — Robustness Patch: Advanced Input Validation & Edge Case Handling
 
 ---
 
@@ -113,6 +115,8 @@ With the core system now functional, future development will focus on:
 	- Safe handling of empty queue operations (dequeue, display, peek) 
 	- Graceful error messages instead of runtime crashes
 	- Defensive programming against invalid state access
+	• (V3.1)Boundary Validation: Integrated logical checks for numerical inputs to ensure data integrity at the point of entry.
+
 
 ## ▶️ Example Output
 

@@ -1,14 +1,16 @@
 #include<iostream> 
 #include<string> 
 #include<iomanip>
-using namespace std; 
-class Patient 
-{ private:
+using namespace std;
+class Patient
+{
+private:
 	string patientID;
 	string name;
 	int age;
 	string condition;
-	int priorityLevel; public:
+int priorityLevel;
+public:
 	Patient(string a, string b, int x, string c, int y)
 	{
 		patientID = a;
@@ -38,14 +40,17 @@ class Patient
 		cout << endl;
 	}
 };
-class PatientQueue { private:
+
+class PatientQueue {
+private:
 	struct Node
 	{
 		Patient s;
 		Node* next;
 		Node(Patient patient_obj) : s(patient_obj), next(nullptr) {}
 	};
-	Node* head = nullptr; public:
+Node* head = nullptr;
+public:
 	void enqueue(Patient p)
 	{
 		Node* X = new Node(p);
@@ -163,8 +168,20 @@ class PatientQueue { private:
 				getline(cin, patientID);
 				cout << "Please enter the ill condition: ";
 				getline(cin, condition);
-				cout << "Please enter age: ";
-				cin >> age;
+				while (true) 
+				{
+					cout << "Please enter age: ";
+					if (cin >> age && age >= 0 && age <= 150) 
+					{
+						break;
+					}
+					else 
+					{
+						cout << "[!] Invalid age. Please enter a number (0-150)." << endl;
+						cin.clear();
+						cin.ignore(1000, '\n');
+					}
+				}
 				cout << "Please enter priority level (1-3): ";
 				cin >> priorityLevel;
 				q.enqueue(Patient(patientID, name, age, condition, priorityLevel));
@@ -202,7 +219,12 @@ class PatientQueue { private:
 			else if (choice == 2) { q.peekFront(); }
 			else if (choice == 3) { q.displayQueue(); }
 			else if (choice == 4) { break; }
-			else { cout << "[!] Invalid selection." << endl; }
+			else
+			{
+				cin.clear();
+				cin.ignore(1000, '\n');
+				cout << "Error, please enter a valid number (1-4)!" << endl;
+			}
 		}
 	}
 	~PatientQueue()
