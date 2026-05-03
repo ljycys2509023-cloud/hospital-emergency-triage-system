@@ -50,6 +50,40 @@ private:
 		Node(Patient patient_obj) : s(patient_obj), next(nullptr) {}
 	};
 Node* head = nullptr;
+
+	unsigned long getHash(string password)
+	{
+		unsigned long hashValue = 5381;
+		for (char c : password)
+		{
+			hashValue = hashValue * 33 + c;
+		}
+		return hashValue;
+	}
+
+	struct account
+	{
+		string username;
+		unsigned long passwordHash;
+		string role;
+	};
+//set up a small database
+account database[2];
+
+	void setupAccounts()
+	{
+	// set up the nurse account
+		database[0].username = "nurse1";
+		database[0].passwordHash = getHash("123"); // password is 123, and system will store the hash value
+		database[0].role = "nurse";
+
+	// set up the doctor account
+		database[1].username = "doc1";
+		database[1].passwordHash = getHash("888"); // password is 888, and system will store the hash value
+		database[1].role = "doctor";
+	}
+
+
 public:
 	void enqueue(Patient p)
 	{
@@ -126,24 +160,57 @@ public:
 		}
 		cout << "\n[ ERROR: Record " << id << " not found in current queue ]" << endl;
 	}
+
+	
+
 	void log(PatientQueue& q)
 	{
-		string role;
+		setupAccounts();
+
+		string inputUser;
+		string inputPass;
+
 		while (true)
 		{
 			cout << "\n" << string(20, '#') << " SYSTEM LOGIN " << string(20, '#') << endl;
-			cout << "Enter role (doctor/nurse) or 'exit' to shut down: ";
-			cin >> role;
-			if (role == "nurse") { nurseMenu(q); }
-			else if (role == "doctor") { doctorMenu(q); }
-			else if (role == "exit") { cout << "System shutting down..." << endl; break; }
-			else {
-				cin.clear();
-				cin.ignore(1000, '\n');
-				cout << "[!] Invalid role. Access denied." << endl;
+			cout << "Enter username or 'exit' to shut down: ";
+			cin >> inputUser;
+			if (inputUser == "exit") { cout << "System shutting down..." << endl; break; }
+
+			cout << "Enter password: ";
+			cin >> inputPass;
+
+			//begin checking
+			bool loginSuccess = false;
+
+			//search the user name in database
+			for (int i = 0; i < 2; i++)
+			{
+				if (database[i].username == inputUser)//find the name, then calculate the password's hashvalue
+				{
+					unsigned long inputHash = getHash(inputPass);
+
+					//compare the two hashvalue
+					if (inputHash == database[i].passwordHash)
+					{
+						cout << "\n[!] Login Successful! Welcome " << inputUser << "!" << endl;
+						loginSuccess = true;
+
+						//open the role menu
+						if (database[i].role == "nurse") { nurseMenu(q); }
+						if (database[i].role == "doctor") { doctorMenu(q); }
+					}
+					break;
+				}
+			}
+
+			if (loginSuccess == false)
+			{
+				cout << "\n[i] Login Failed: Incorrect username or password." << endl;
 			}
 		}
 	}
+
 	void nurseMenu(PatientQueue& q)
 	{
 		int choice;

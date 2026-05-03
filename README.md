@@ -52,6 +52,7 @@ The system adopts a priority-based insertion strategy with a look-ahead approach
 	•	v2.0 — Hospital emergency triage & queue management system
 	•	v3.0 — Security Governance & Role-Based Access Update
 	•		v3.1 — Robustness Patch: Advanced Input Validation & Edge Case Handling
+	•		v3.2 — Security Hardening: DJB2 One-Way Hashing & Pre-seeded Authentication Database
 
 ---
 
@@ -66,25 +67,26 @@ This update demonstrates how foundational data structures can evolve into meanin
 
 ✅ Fulfilled Improvements
 
-This update successfully implements several features that were previously outlined in the Future Improvements section of the nnitial lined list
-	•	✔️ Search Functionality (searchByID)
-→ Enables efficient lookup of patients within the queue system
-	•	✔️ Application-Level Extension
-→ The original linked list has been extended into a practical system (hospital triage queue), demonstrating real-world applicability
-	•	✔️ Improved System Structure
-→ Clear separation between data model (Patient), node structure, and queue logic (PatientQueue)
-	•       ✔  Defensive Input Validation
-→ Leveraged cin.clear() and cin.ignore() to neutralize buffer redundancy. This shields the system from potential logic hangs caused by malformed user telemetry.
+This update successfully implements several features that were previously outlined in the Future Improvements section of the nnitial lined list  
+	•	✔️ Search Functionality (searchByID)  
+→ Enables efficient lookup of patients within the queue system  
+	•	✔️ Application-Level Extension  
+→ The original linked list has been extended into a practical system (hospital triage queue), demonstrating real-world applicability  
+	•	✔️ Improved System Structure  
+→ Clear separation between data model (Patient), node structure, and queue logic (PatientQueue)  
+	•       ✔  Defensive Input Validation  
+→ Leveraged cin.clear() and cin.ignore() to neutralize buffer redundancy. This shields the system from potential logic hangs caused by malformed user telemetry.   
+→ Implemented DJB2 algorithm to protect administrative credentials, ensuring no plaintext passwords are stored in memory.  
+	•	✔ Cryptographic Identity: Transitioning from plaintext checks to DJB2 One-Way Hashing for credential protection.  
 
 ---
 
 🔄 Updated Future Improvements
 
-With the core system now functional, future development will focus on:
-	•       🔐 Cryptographic Identity: Transitioning from plaintext checks to DJB2 One-Way Hashing for credential protection.
-	•       💾 Persistence: Implementing serialized file I/O to maintain medical logs across sessions.
-	•	🔹 Modular refactoring into header (.h) and implementation (.cpp) files
-	•	🔹 Additional utility functions (e.g., reverse, statistics, or reporting features)
+With the core system now functional, future development will focus on:  
+	•   🔹 💾 Persistence: Implementing serialized file I/O to maintain medical logs across sessions.  
+	•	🔹 Modular refactoring into header (.h) and implementation (.cpp) files  
+	•	🔹 Additional utility functions (e.g., reverse, statistics, or reporting features)  
 
 
 ## ⚙️ Complexity Analysis
@@ -96,6 +98,9 @@ With the core system now functional, future development will focus on:
 | `searchByID` | $O(n)$ | $O(1)$ | Linear traversal to retrieve specific records. |
 | `displayQueue`| $O(n)$ | $O(1)$ | Full system state visualization. |
 | `Cleanup/Exit`| $O(n)$ | $O(1)$ | Recursive deallocation of all heap nodes. |
+| `getHash` | $O(k)$ | $O(1)$ | $k$ is the length of the input password string. |
+| `Login` | $O(m)$ | $O(1)$ | $m$ is the number of pre-seeded accounts in the database. |
+
 
 --- 
 ## 🧠 System Safety, Security & Implementation Highlights🛡️ This project emphasizes safe and correct memory handling:
@@ -108,31 +113,39 @@ With the core system now functional, future development will focus on:
   - Empty list verification.
   - Head node removal.
   - Safe traversal with `nullptr` termination. ---
+ - **Cryptographic Credential Protection**: Utilizes the DJB2 hashing algorithm for one-way password encryption. This prevents sensitive data exposure even if the system's memory structure is inspected.  
+ - **Pre-seeded Secure Database**: Initialized with structured administrative accounts, simulating a real-world multi-user environment.  
 
-### 🛡 Robustness Enhancements (NEW)
+
+
+### 🛡 Robustness Enhancements
 	• Input Sanitization: Integrated cin.clear() and cin.ignore() to neutralize buffer redundancy. This defensive layer shields the system from logic hangs or infinite loops caused by malformed user input. 
 	• Secure Termination: Added a dedicated exit protocol that triggers the class destructor, ensuring a Graceful Shutdown rather than an abrupt process kill.
 	- Safe handling of empty queue operations (dequeue, display, peek) 
 	- Graceful error messages instead of runtime crashes
 	- Defensive programming against invalid state access
 	• (V3.1)Boundary Validation: Integrated logical checks for numerical inputs to ensure data integrity at the point of entry.
-
+	• (V3.2)Cryptographic Integrity: Integrated DJB2 hashing algorithm to ensure administrative passwords are never stored in plaintext, mitigating memory-leak exploitation risks.
 
 ## ▶️ Example Output
+### 🖥️ Example Output
 
-1. Multi-Role Authentication Layer
-When the system starts, it requires role identification to enforce the Principle of Least Privilege:
+**1. Multi-Role Secure Login (Hash-Verified)**
 #################### SYSTEM LOGIN ####################
-Enter role (doctor/nurse) or 'exit' to shut down: nurse
- -------------------- NURSE WORKSTATION -------------------- 
-1. Display All Waiting Patients 
-2. Register New Patient Entry 
-3. Search Patient by ID 
+Enter username or 'exit' to shut down: nurse1
+Enter password: 123
+
+[!] Login Successful! Welcome nurse1!
+
+**2. Nurse Workstation (Registration & Triage)**
+-------------------- NURSE WORKSTATION --------------------
+1. Display All Waiting Patients
+2. Register New Patient Entry
+3. Search Patient by ID
 4. Logout
 Selection: 1
 
-2. Enhanced Live Hospital Queue (High-Fidelity UI) 
-The output now features optimized spacing and includes clinical notes for better triage visibility:
+//The output now features optimized spacing and includes clinical notes for better triage visibility:
 ============================== LIVE HOSPITAL QUEUE ==============================
 Pos   Patient Name      ID          Condition                Status
 --------------------------------------------------------------------------------
@@ -144,23 +157,20 @@ No.5  Siti              P002        Common Cold              [MILD]
 No.6  Tan               P006        Skin Rash                [MILD]
 ================================================================================
 
-3. Doctor's Clinical In
-terface Switching to the doctor role reveals administrative privileges such as treatment and priority previews:
-#################### SYSTEM LOGIN ####################
-Enter role (doctor/nurse) or 'exit' to shut down: doctor 
-
-++++++++++++++++++++ DOCTOR INTERFACE ++++++++++++++++++++ 
-1. Treat Next Patient 
-2. Preview Next in Line 
-3. View Full Queue 
-4. Logout
+**3. Doctor Interface (Treatment Workflow)**
+++++++++++++++++++++ DOCTOR INTERFACE ++++++++++++++++++++
+1. Treat Next Patient
+2. Preview Next in Line
+3. Logout
 Selection: 1
 
 ******************** CALLING PATIENT ********************
-Patient ID : P004 
-Name : Wong Age : 12 
-Clinical Note : Head Injury
- Priority Status : CRITICAL (Immediate Attention)
+Patient ID          : P004
+Name                : Wong
+Age                 : 12
+Clinical Note       : Head Injury
+Priority Status     : CRITICAL (Immediate Attention)
+
 
 ## 🚀 How to Run
 ### 1. Prerequisites
@@ -171,10 +181,11 @@ Use the following command to compile the triage system: ```bash g++ PatientQueue
 Run the compiled program to enter the secure login interface
 : ./hospital_system
 ### 4. System Usage Guide
-�� Login: Enter doctor or nurse to access specific workstations. 
-�� Navigation: Follow the on-screen numerical menus to perform operations. 
-�� Termination: Type exit in the main login screen to trigger the Secure Exit Protocol and clear memory.
+- Login: Enter doctor or nurse to access specific workstations.  
+- Navigation: Follow the on-screen numerical menus to perform operations.  
+- Termination: Type exit in the main login screen to trigger the Secure Exit Protocol and clear memory.  
 
-📈 v3.0 Evolution Sumary
-• Fulfilled: ✅ Role-based Access Control (RBAC) | ✅ Clinical Condition Tracking | ✅ Defensive Input Handling.
-• Future Roadmap: 🔐 Implementing DJB2 Password Hashing for cryptographic security | 💾 Adding File I/O Persistence for patient records.
+📈 v3.0 Evolution Summary
+• Fulfilled: ✅ Role-based Access Control (RBAC) | ✅ Clinical Condition Tracking | ✅ Defensive Input Handling.  
+• Security Update (v3.2): 🔐 Cryptographic Identity | Successfully transitioned from plaintext checks to DJB2 One-Way Hashing for administrative credential protection.  
+• Future Roadmap: 💾 Implementing File I/O Persistence for patient records | 🛡️ Brute-force Protection for login attempts.  
