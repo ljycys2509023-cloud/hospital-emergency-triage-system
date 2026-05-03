@@ -6,8 +6,9 @@ This project implements a **Singly Linked List** in C++, developed during my fir
 - **Fundamental data structure design**: Principles of linear data structures. *These concepts are essential for low-level programming, system architecture, and cybersecurity.* 
 ---
 ## 🛠️ Core Features
-- **Insert at Head** (`addhead`) — $O(1)$ - **Insert after Value** (`addNode`) — $O(n)$ - **Delete by Value** (`delNode`) — $O(n)$ - **Traversal**: Print the list to 
-console. - **Memory Safety**: Automatic cleanup via custom destructor. ---
+- **Insert at Head**: (`addhead`) — $O(1)$ - **Insert after Value** (`addNode`) — $O(n)$ - **Delete by Value** (`delNode`) — $O(n)$ - **Traversal**: Print the list to 
+console.  
+- **Memory Safety**: Automatic cleanup via custom destructor. ---
 
 ## 🔄 Project Update: From Data Structure to Application System
 
@@ -22,27 +23,27 @@ This transition reflects a shift from academic exercise to application-oriented 
 
 🚀 What’s New in This Update
 
-This version extends the original linked list into a functional system:
-	•	Introduced a Patient class to encapsulate structured data (ID, name, condition, priority level)
-	•	Transformed the linked list into a priority-based queue (triage system)
-	•	Implemented priority-aware insertion (enqueue) ensuring critical patients are served first
-	•	Added dequeue operation to simulate patient service workflow
-	•	Developed search functionality for locating patients by ID
-	•	Enhanced output formatting using <iomanip> for clear and professional display
-	•	Strengthened robustness with proper handling of edge cases (e.g., empty queue operations)
-	Dual-Role Workflow & RBAC 👥---Implemented a secure authentication layer that bifurcates system access into Doctor and Nurse workstations.
-	Advanced Patient Profiling 📊---Enhanced data objects to include Clinical Conditions and Age, allowing for a more holistic triage process.
-	Defensive Input Handling 🛡️---Integrated buffer management (cin.clear()/cin.ignore()) to protect the system from malformed user input and logical deadlocks.
-	• (V3.1)🛡️ Granular Input Sanitization: Implemented range-based validation for patient telemetry (e.g., Age constrained between 0-150) and robust buffer management to prevent infinite loops caused by type-mismatching inputs.
+This version extends the original linked list into a functional system:  
+	•	Introduced a Patient class to encapsulate structured data (ID, name, condition, priority level)  
+	•	Transformed the linked list into a priority-based queue (triage system)  
+	•	Implemented priority-aware insertion (enqueue) ensuring critical patients are served first  
+	•	Added dequeue operation to simulate patient service workflow  
+	•	Developed search functionality for locating patients by ID  
+	•	Enhanced output formatting using <iomanip> for clear and professional display  
+	•	Strengthened robustness with proper handling of edge cases (e.g., empty queue operations)  
+	Dual-Role Workflow & RBAC 👥---Implemented a secure authentication layer that bifurcates system access into Doctor and Nurse workstations.  
+	Advanced Patient Profiling 📊---Enhanced data objects to include Clinical Conditions and Age, allowing for a more holistic triage process.  
+	Defensive Input Handling 🛡️---Integrated buffer management (cin.clear()/cin.ignore()) to protect the system from malformed user input and logical deadlocks.  
+	• (V3.1)🛡️ Granular Input Sanitization: Implemented range-based validation for patient telemetry (e.g., Age constrained between 0-150) and robust buffer management to prevent infinite loops caused by type-mismatching inputs.  
 
 ---
 
 🧠 Design Insight
 
-The system adopts a priority-based insertion strategy with a look-ahead approach (temp->next), ensuring:
-	•	Correct ordering of patients based on urgency
-	•	FIFO behavior for patients with equal priority
-	•	Clean and maintainable pointer logic
+The system adopts a priority-based insertion strategy with a look-ahead approach (temp->next), ensuring:  
+	•	Correct ordering of patients based on urgency  
+	•	FIFO behavior for patients with equal priority  
+	•	Clean and maintainable pointer logic  
 
 ---
 
@@ -58,10 +59,10 @@ The system adopts a priority-based insertion strategy with a look-ahead approach
 
 💡 Reflection
 
-This update demonstrates how foundational data structures can evolve into meaningful applications. It also highlights the importance of:
-	•	Designing for real-world constraints
-	•	Writing maintainable and extensible code
-	•	Bridging the gap between theory and practical systems
+This update demonstrates how foundational data structures can evolve into meaningful applications. It also highlights the importance of:  
+	•	Designing for real-world constraints  
+	•	Writing maintainable and extensible code  
+	•	Bridging the gap between theory and practical systems  
 
 ---
 
@@ -137,7 +138,9 @@ Enter password: 123
 
 [!] Login Successful! Welcome nurse1!
 
-**2. Nurse Workstation (Registration & Triage)**
+**2. Nurse Workstation (Registration & Triage)**  
+
+```text
 -------------------- NURSE WORKSTATION --------------------
 1. Display All Waiting Patients
 2. Register New Patient Entry
@@ -145,6 +148,7 @@ Enter password: 123
 4. Logout
 Selection: 1
 
+1. 
 //The output now features optimized spacing and includes clinical notes for better triage visibility:
 ============================== LIVE HOSPITAL QUEUE ==============================
 Pos   Patient Name      ID          Condition                Status
@@ -156,8 +160,10 @@ No.4  Zali              P005        Abdominal Pain           [MODERATE]
 No.5  Siti              P002        Common Cold              [MILD]
 No.6  Tan               P006        Skin Rash                [MILD]
 ================================================================================
+```
 
-**3. Doctor Interface (Treatment Workflow)**
+**3. Doctor Interface (Treatment Workflow)**  
+```text
 ++++++++++++++++++++ DOCTOR INTERFACE ++++++++++++++++++++
 1. Treat Next Patient
 2. Preview Next in Line
@@ -170,6 +176,7 @@ Name                : Wong
 Age                 : 12
 Clinical Note       : Head Injury
 Priority Status     : CRITICAL (Immediate Attention)
+```
 
 
 ## 🚀 How to Run
@@ -186,6 +193,11 @@ Run the compiled program to enter the secure login interface
 - Termination: Type exit in the main login screen to trigger the Secure Exit Protocol and clear memory.  
 
 📈 v3.0 Evolution Summary
-• Fulfilled: ✅ Role-based Access Control (RBAC) | ✅ Clinical Condition Tracking | ✅ Defensive Input Handling.  
-• Security Update (v3.2): 🔐 Cryptographic Identity | Successfully transitioned from plaintext checks to DJB2 One-Way Hashing for administrative credential protection.  
-• Future Roadmap: 💾 Implementing File I/O Persistence for patient records | 🛡️ Brute-force Protection for login attempts.  
+• Fulfilled:  
+	✅ Role-based Access Control (RBAC)  
+	✅ Clinical Condition Tracking  
+	✅ Defensive Input Handling.  
+• Security Update (v3.2):  
+	🔐 Cryptographic Identity : Successfully transitioned from plaintext checks to DJB2 One-Way Hashing for administrative credential protection.  
+• Future Roadmap:  
+	💾 Implementing File I/O Persistence for patient records | 🛡️ Brute-force Protection for login attempts.  
