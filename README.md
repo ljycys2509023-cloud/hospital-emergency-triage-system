@@ -19,7 +19,8 @@ The hospital emergency department was chosen as a practical case study, where pa
 handling. This led to the development of a hospital emergency triage and queue management system built on top of the original linked list structure.
 
 This transition reflects a shift from academic exercise to application-oriented system design.
-⸻
+
+---
 
 🚀 What’s New in This Update
 
@@ -35,6 +36,8 @@ This version extends the original linked list into a functional system:
 	Advanced Patient Profiling 📊---Enhanced data objects to include Clinical Conditions and Age, allowing for a more holistic triage process.  
 	Defensive Input Handling 🛡️---Integrated buffer management (cin.clear()/cin.ignore()) to protect the system from malformed user input and logical deadlocks.  
 	• (V3.1)🛡️ Granular Input Sanitization: Implemented range-based validation for patient telemetry (e.g., Age constrained between 0-150) and robust buffer management to prevent infinite loops caused by type-mismatching inputs.  
+	• (V3.2)🛡️ DJB2 hash-based authentication: Integrated DJB2 hash-based authentication and Role-Based Access Control (RBAC) to secure the medical workstation, alongside enhanced input validation logic to ensure clinical data integrity.  
+	• (V3.3)(current) The Architectural Refinement: Successfully migrated to a modular OOP architecture with separated interface (.h) and implementation (.cpp), while significantly enhancing system stability by implementing robust std::cin exception handling and resolving memory initialization warnings  
 
 ---
 
@@ -49,12 +52,13 @@ The system adopts a priority-based insertion strategy with a look-ahead approach
 
 🛠 System Evolution
 
-	•	v1.0 — Basic singly linked list implementation
-	•	v2.0 — Hospital emergency triage & queue management system
-	•	v3.0 — Security Governance & Role-Based Access Update
-	•		v3.1 — Robustness Patch: Advanced Input Validation & Edge Case Handling
+	•	v1.0 — Basic singly linked list implementation  
+	•	v2.0 — Hospital emergency triage & queue management system  
+	•	v3.0 — Security Governance & Role-Based Access Update  
+	•		v3.1 — Robustness Patch: Advanced Input Validation & Edge Case Handling  
+	•		v3.2 — Security Hardening: DJB2 One-Way Hashing & Pre-seeded Authentication Database  
 	•		v3.2 — Security Hardening: DJB2 One-Way Hashing & Pre-seeded Authentication Database
-
+	•		v3.3 — Architectural Decoupling: Separating class declarations (.h) from logic implementations & Enhanced Input Validation and Sanitization  
 ---
 
 💡 Reflection
@@ -127,16 +131,19 @@ With the core system now functional, future development will focus on:
 	- Defensive programming against invalid state access
 	• (V3.1)Boundary Validation: Integrated logical checks for numerical inputs to ensure data integrity at the point of entry.
 	• (V3.2)Cryptographic Integrity: Integrated DJB2 hashing algorithm to ensure administrative passwords are never stored in plaintext, mitigating memory-leak exploitation risks.
+	• (V3.3)Input Validation: Implemented Robust Input Error Handling  
 
 ## ▶️ Example Output
 ### 🖥️ Example Output
 
-**1. Multi-Role Secure Login (Hash-Verified)**
+**1. Multi-Role Secure Login (Hash-Verified)**  
+```text
 #################### SYSTEM LOGIN ####################
 Enter username or 'exit' to shut down: nurse1
 Enter password: 123
 
 [!] Login Successful! Welcome nurse1!
+```
 
 **2. Nurse Workstation (Registration & Triage)**  
 
@@ -199,5 +206,6 @@ Run the compiled program to enter the secure login interface
 	✅ Defensive Input Handling.  
 • Security Update (v3.2):  
 	🔐 Cryptographic Identity : Successfully transitioned from plaintext checks to DJB2 One-Way Hashing for administrative credential protection.  
+• Structural Optimization (v3.2): Architectural Decoupling: Separated class declarations (.h) from implementations (.cpp) and enhanced input validation to prevent system instability.  
 • Future Roadmap:  
 	💾 Implementing File I/O Persistence for patient records | 🛡️ Brute-force Protection for login attempts.  
