@@ -190,10 +190,15 @@ Priority Status     : CRITICAL (Immediate Attention)
 ### 1. Prerequisites
 Ensure you have a C++ compiler installed (e.g., `g++` for Linux/macOS or `MinGW` for Windows).
 ### 2. Compile the Source File
-Use the following command to compile the triage system: ```bash g++ PatientQueue.cpp -o hospital_system
+Since the project is now modularized, you need to compile all .cpp files together:  
+```text
+g++ main.cpp hospital_triage_system.cpp -o hospital_system
+```
+(Note: Ensure Hospital.h is in the same directory before compiling.)
 ### 3. Execute the Binary
-Run the compiled program to enter the secure login interface
-: ./hospital_system
+Run the compiled program to enter the secure login interface  
+• Windows: hospital_system.exe  
+• Linux/macOS: ./hospital_system  
 ### 4. System Usage Guide
 - Login: Enter doctor or nurse to access specific workstations.  
 - Navigation: Follow the on-screen numerical menus to perform operations.  
@@ -206,6 +211,6 @@ Run the compiled program to enter the secure login interface
 	✅ Defensive Input Handling.  
 • Security Update (v3.2):  
 	🔐 Cryptographic Identity : Successfully transitioned from plaintext checks to DJB2 One-Way Hashing for administrative credential protection.  
-• Structural Optimization (v3.2): Architectural Decoupling: Separated class declarations (.h) from implementations (.cpp) and enhanced input validation to prevent system instability.  
+• Structural Optimization (v3.3): Architectural Decoupling: Separated class declarations (.h) from implementations (.cpp) and enhanced input validation to prevent system instability.  
 • Future Roadmap:  
 	💾 Implementing File I/O Persistence for patient records | 🛡️ Brute-force Protection for login attempts.  
