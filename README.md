@@ -210,7 +210,7 @@ Ensure you have a C++ compiler installed (e.g., `g++` for Linux/macOS or `MinGW`
 
 This project also uses standard C++ file I/O through `<fstream>` to save and load patient records.  
 
-### 2. Compile the Source File
+### 2. Compile the Source Files
 
 Since the project is now modularized, you need to compile all .cpp files together:  
 ```bash
@@ -222,8 +222,8 @@ g++ main.cpp hospital_triage_system.cpp -o hospital_system
 
 Run the compiled program to enter the secure login interface
 
-- Windows: hospital_system.exe  
-- Linux/macOS: ./hospital_system  
+- Windows: `hospital_system.exe`  
+- Linux/macOS: `./hospital_system`  
 
 ### 4. File Persistence
 The system automatically uses `patient.txt` to store and restore patient queue records.  
