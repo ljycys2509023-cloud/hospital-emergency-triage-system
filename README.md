@@ -209,29 +209,23 @@ Priority Status     : CRITICAL (Immediate Attention)
 Ensure you have a C++ compiler installed (e.g., `g++` for Linux/macOS or `MinGW` for Windows).  
 
 This project also uses standard C++ file I/O through `<fstream>` to save and load patient records.  
-````
 
-````md
 ### 2. Compile the Source File
+
 Since the project is now modularized, you need to compile all .cpp files together:  
 ```bash
 g++ main.cpp hospital_triage_system.cpp -o hospital_system
 ```
 (Note: Ensure Hospital.h is in the same directory before compiling.)
-````
 
-````md
 ### 3. Execute the Binary
 
 Run the compiled program to enter the secure login interface
 
 - Windows: hospital_system.exe  
 - Linux/macOS: ./hospital_system  
-````
 
-```md
 ### 4. File Persistence
-```
 The system automatically uses `patient.txt` to store and restore patient queue records.  
 
 - If `patient.txt` exists, the system loads previous patient records when the program starts.  
@@ -250,16 +244,15 @@ Example:
 P001|Ahmad|25|Heart Attack|1
 P002|Siti|40|Common Cold|3
 ```
-```
 
-```md
 ### 5. System Usage Guide
 
 - Login as Nurse: use `nurse1` with password `123`.
 - Login as Doctor: use `doc1` with password `888`.
 - Navigation: Follow the on-screen numerical menus to perform operations.
 - Termination: Type `exit` in the main login screen to trigger the secure exit protocol, save the current queue to `patient.txt`, and release allocated memory.
-```
+
+````
 
 ---
 
