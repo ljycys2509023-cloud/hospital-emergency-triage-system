@@ -203,7 +203,7 @@ Priority Status     : CRITICAL (Immediate Attention)
 
 
 ## 🚀 How to Run
-````md
+
 ### 1. Prerequisites
 
 Ensure you have a C++ compiler installed (e.g., `g++` for Linux/macOS or `MinGW` for Windows).  
@@ -252,7 +252,6 @@ P002|Siti|40|Common Cold|3
 - Navigation: Follow the on-screen numerical menus to perform operations.
 - Termination: Type `exit` in the main login screen to trigger the secure exit protocol, save the current queue to `patient.txt`, and release allocated memory.
 
-````
 
 ---
 
