@@ -64,6 +64,10 @@ public:
 
 	void doctorMenu(PatientQueue& q);
 
+	void saveToFile(std::string filename);
+
+	void loadFromFile(std::string filename);
+
 	~PatientQueue();
 };
 

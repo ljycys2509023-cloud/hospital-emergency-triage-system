@@ -2,6 +2,7 @@
 #include<iostream>
 #include<string>
 #include<iomanip>
+#include<fstream>
 
 using namespace std;
 
@@ -142,6 +143,62 @@ void PatientQueue::searchByID(string id)
 		temp = temp->next;
 	}
 	cout << "\n[ ERROR: Record " << id << " not found in current queue ]" << endl;
+}
+
+void PatientQueue::saveToFile(string filename)
+{
+	ofstream outFile(filename);
+
+	if (!outFile)
+	{
+		cout << "[!] Error: Unable to open file for saving." << endl;
+		return;
+	}
+
+	Node* temp = head;
+	while (temp != NULL)
+	{
+		outFile << temp->s.getID() << "|"
+			<< temp->s.getName() << "|"
+			<< temp->s.getAge() << "|"
+			<< temp->s.getCondition() << "|"
+			<< temp->s.getPriorityLevel() << endl;
+
+		temp = temp->next;
+	}
+
+	outFile.close();
+	cout << "[!]The patient queue saved to file successfully" << endl;
+}
+
+void PatientQueue::loadFromFile(string filename)
+{
+	ifstream infile(filename);
+
+	if (!infile)
+	{
+		cout << "[!] No previous patient record found. Starting with default queue." << endl;
+		return;
+	}
+
+	string patientID;
+	string name;
+	string ageText;
+	string condition;
+	string priorityText;
+
+	while (getline(infile, patientID, '|'))
+	{
+		getline(infile, name, '|');
+		getline(infile, ageText, '|');
+		getline(infile, condition, '|');
+		getline(infile, priorityText);
+
+		int age = stoi(ageText);
+		int priorityLevel = stoi(priorityText);
+
+		enqueue(Patient(patientID, name, age, condition, priorityLevel));
+	}
 }
 
 void PatientQueue::log(PatientQueue& q)

@@ -37,7 +37,12 @@ This version extends the original linked list into a functional system:
 	Defensive Input Handling 🛡️---Integrated buffer management (cin.clear()/cin.ignore()) to protect the system from malformed user input and logical deadlocks.  
 	• (V3.1)🛡️ Granular Input Sanitization: Implemented range-based validation for patient telemetry (e.g., Age constrained between 0-150) and robust buffer management to prevent infinite loops caused by type-mismatching inputs.  
 	• (V3.2)🛡️ DJB2 hash-based authentication: Integrated DJB2 hash-based authentication and Role-Based Access Control (RBAC) to secure the medical workstation, alongside enhanced input validation logic to ensure clinical data integrity.  
-	• (V3.3)(current) The Architectural Refinement: Successfully migrated to a modular OOP architecture with separated interface (.h) and implementation (.cpp), while significantly enhancing system stability by implementing robust std::cin exception handling and resolving memory initialization warnings  
+	• (V3.3) The Architectural Refinement: Successfully migrated to a modular OOP architecture with separated interface (.h) and implementation (.cpp), while significantly enhancing system stability by implementing robust std::cin exception handling and resolving memory initialization warnings  
+	• (V3.4)(current) File I/O Persistence Update: Before this update, all patient records existed only during runtime. After the program terminated, the queue was lost. With file I/O persistence, the system can now save and recover patient data, making it closer to a real-world hospital workflow.  
+		- Added `saveToFile()` to store patient queue records into `patient.txt`.  
+		- Added `loadFromFile()` to restore patient records when the program starts.  
+		- Preserved priority-based triage ordering by reloading records through the existing `enqueue()` logic.  
+		- Improved system continuity across multiple sessions.  
 
 ---
 
@@ -57,8 +62,10 @@ The system adopts a priority-based insertion strategy with a look-ahead approach
 	•	v3.0 — Security Governance & Role-Based Access Update  
 	•		v3.1 — Robustness Patch: Advanced Input Validation & Edge Case Handling  
 	•		v3.2 — Security Hardening: DJB2 One-Way Hashing & Pre-seeded Authentication Database  
-	•		v3.2 — Security Hardening: DJB2 One-Way Hashing & Pre-seeded Authentication Database
+	•		v3.2 — Security Hardening: DJB2 One-Way Hashing & Pre-seeded Authentication Database  
 	•		v3.3 — Architectural Decoupling: Separating class declarations (.h) from logic implementations & Enhanced Input Validation and Sanitization  
+	•		v3.4 — File I/O Persistence Update: Add patient information storing in file function  
+
 ---
 
 💡 Reflection
@@ -72,25 +79,34 @@ This update demonstrates how foundational data structures can evolve into meanin
 
 ✅ Fulfilled Improvements
 
-This update successfully implements several features that were previously outlined in the Future Improvements section of the nnitial lined list  
-	•	✔️ Search Functionality (searchByID)  
-→ Enables efficient lookup of patients within the queue system  
-	•	✔️ Application-Level Extension  
-→ The original linked list has been extended into a practical system (hospital triage queue), demonstrating real-world applicability  
-	•	✔️ Improved System Structure  
-→ Clear separation between data model (Patient), node structure, and queue logic (PatientQueue)  
-	•       ✔  Defensive Input Validation  
-→ Leveraged cin.clear() and cin.ignore() to neutralize buffer redundancy. This shields the system from potential logic hangs caused by malformed user telemetry.   
-→ Implemented DJB2 algorithm to protect administrative credentials, ensuring no plaintext passwords are stored in memory.  
-	•	✔ Cryptographic Identity: Transitioning from plaintext checks to DJB2 One-Way Hashing for credential protection.  
+This update successfully implements several features that were previously outlined in the Future Improvements section of the initial linked list project.  
+
+- ✔️ Search Functionality (`searchByID`)  
+  → Enables efficient lookup of patients within the queue system.  
+
+- ✔️ Application-Level Extension  
+  → The original linked list has been extended into a practical hospital triage queue, demonstrating real-world applicability.  
+
+- ✔️ Improved System Structure  
+  → Clear separation between the data model (`Patient`), node structure, and queue logic (`PatientQueue`).  
+
+- ✔️ Defensive Input Validation  
+  → Uses `cin.clear()` and `cin.ignore()` to handle malformed user input and prevent logic hangs.  
+
+- ✔️ Role-Based Access Control  
+  → Separates Nurse and Doctor workstations, ensuring different users can only access appropriate operations.  
+
+- ✔️ Educational Password Hashing  
+  → Implements DJB2-based password hashing to avoid direct plaintext password comparison in the login system.  
+
+- ✔️ File I/O Persistence  
+  → Adds `saveToFile()` and `loadFromFile()` to store and restore patient queue records through `patient.txt`.  
 
 ---
 
 🔄 Updated Future Improvements
 
 With the core system now functional, future development will focus on:  
-	•   🔹 💾 Persistence: Implementing serialized file I/O to maintain medical logs across sessions.  
-	•	🔹 Modular refactoring into header (.h) and implementation (.cpp) files  
 	•	🔹 Additional utility functions (e.g., reverse, statistics, or reporting features)  
 
 
@@ -187,22 +203,65 @@ Priority Status     : CRITICAL (Immediate Attention)
 
 
 ## 🚀 How to Run
+````md
 ### 1. Prerequisites
-Ensure you have a C++ compiler installed (e.g., `g++` for Linux/macOS or `MinGW` for Windows).
+
+Ensure you have a C++ compiler installed (e.g., `g++` for Linux/macOS or `MinGW` for Windows).  
+
+This project also uses standard C++ file I/O through `<fstream>` to save and load patient records.  
+````
+
+````md
 ### 2. Compile the Source File
 Since the project is now modularized, you need to compile all .cpp files together:  
-```text
+```bash
 g++ main.cpp hospital_triage_system.cpp -o hospital_system
 ```
 (Note: Ensure Hospital.h is in the same directory before compiling.)
+````
+
+````md
 ### 3. Execute the Binary
-Run the compiled program to enter the secure login interface  
-• Windows: hospital_system.exe  
-• Linux/macOS: ./hospital_system  
-### 4. System Usage Guide
-- Login: Enter doctor or nurse to access specific workstations.  
-- Navigation: Follow the on-screen numerical menus to perform operations.  
-- Termination: Type exit in the main login screen to trigger the Secure Exit Protocol and clear memory.  
+
+Run the compiled program to enter the secure login interface
+
+- Windows: hospital_system.exe  
+- Linux/macOS: ./hospital_system  
+````
+
+```md
+### 4. File Persistence
+```
+The system automatically uses `patient.txt` to store and restore patient queue records.  
+
+- If `patient.txt` exists, the system loads previous patient records when the program starts.  
+- If `patient.txt` does not exist, the system initializes the default sample patient queue.  
+- When the user exits from the main login screen by typing `exit`, the current queue is saved back to `patient.txt`.  
+
+The saved patient records follow this format:  
+
+```text
+PatientID|Name|Age|Condition|PriorityLevel
+```
+
+Example:  
+
+```text
+P001|Ahmad|25|Heart Attack|1
+P002|Siti|40|Common Cold|3
+```
+```
+
+```md
+### 5. System Usage Guide
+
+- Login as Nurse: use `nurse1` with password `123`.
+- Login as Doctor: use `doc1` with password `888`.
+- Navigation: Follow the on-screen numerical menus to perform operations.
+- Termination: Type `exit` in the main login screen to trigger the secure exit protocol, save the current queue to `patient.txt`, and release allocated memory.
+```
+
+---
 
 📈 v3.0 Evolution Summary
 • Fulfilled:  
@@ -212,5 +271,6 @@ Run the compiled program to enter the secure login interface
 • Security Update (v3.2):  
 	🔐 Cryptographic Identity : Successfully transitioned from plaintext checks to DJB2 One-Way Hashing for administrative credential protection.  
 • Structural Optimization (v3.3): Architectural Decoupling: Separated class declarations (.h) from implementations (.cpp) and enhanced input validation to prevent system instability.  
+• File I/O Persistence Update (v3.4): This update introduces file-based persistence for the hospital emergency triage system.  
 • Future Roadmap:  
-	💾 Implementing File I/O Persistence for patient records | 🛡️ Brute-force Protection for login attempts.  
+	🛡️ Brute-force Protection for login attempts.  
