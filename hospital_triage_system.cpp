@@ -3,6 +3,7 @@
 #include<string>
 #include<iomanip>
 #include<fstream>
+#include<sstream>
 
 using namespace std;
 
@@ -186,18 +187,99 @@ void PatientQueue::loadFromFile(string filename)
 	string ageText;
 	string condition;
 	string priorityText;
+	string line;
 
-	while (getline(infile, patientID, '|'))
+	int recordCount = 0;
+	int skippedCount = 0;
+
+	while (getline(infile, line))
 	{
-		getline(infile, name, '|');
-		getline(infile, ageText, '|');
-		getline(infile, condition, '|');
-		getline(infile, priorityText);
+		stringstream ss(line);
 
-		int age = stoi(ageText);
-		int priorityLevel = stoi(priorityText);
+		if (!getline(ss, patientID, '|') ||
+			!getline(ss, name, '|') ||
+			!getline(ss, ageText, '|') ||
+			!getline(ss, condition, '|') ||
+			!getline(ss, priorityText))
+		{
+			cout << "[!] Warning: Incomplete patient record detected. Record skipped."
+				<< endl;
 
-		enqueue(Patient(patientID, name, age, condition, priorityLevel));
+			skippedCount++;
+			continue;
+		}
+
+		if (patientID.empty() || name.empty() || condition.empty())
+		{
+			cout << "[!] Warning: Missing required data in patient record. "
+				<< "Record skipped." << endl;
+			skippedCount++;
+			continue;
+		}
+		if (patientIDExists(patientID))
+		{
+			cout << "[!] Warning: Duplicate patient ID "
+				<< patientID << ". Record skipped." << endl;
+
+			skippedCount++;
+			continue;
+		}
+
+		try
+		{
+			size_t agePos;
+			int age = stoi(ageText, &agePos);
+			if (agePos != ageText.length())
+			{
+				cout << "[!] Warning: Invalid age format for patient "
+					<< patientID << ". Record skipped." << endl;
+
+				skippedCount++;
+				continue;
+			}
+			if (age < 0 || age > 150)
+			{
+				cout << "[!] Warning: Invalid age for patient "
+					<< patientID << ". Record skipped." << endl;
+				skippedCount++;
+				continue;
+			}
+			
+			size_t priorityPos;
+			int priorityLevel = stoi(priorityText, &priorityPos);
+			if (priorityPos != priorityText.length())
+			{
+				cout << "[!] Warning: Invalid priority format for patient "
+					<< patientID << ". Record skipped." << endl;
+
+				skippedCount++;
+				continue;
+			}
+			if (priorityLevel < 1 || priorityLevel > 3)
+			{
+				cout << "[!] Warning: Invalid priority level for patient "
+					<< patientID << ". Record skipped." << endl;
+				skippedCount++;
+				continue;
+			}
+
+			enqueue(Patient(patientID, name, age, condition, priorityLevel));
+			recordCount++;
+		}
+		catch (const exception&)
+		{
+			cout << "[!] Warning: Invalid numerical data for patient "
+				<< patientID << ". Record skipped." << endl;
+			skippedCount++;
+		}
+	}
+
+	cout << "[!] Patient records loaded successfully: "
+		<< recordCount << endl;
+	if (skippedCount > 0)
+	{
+		cout << "[!] Invalid records skipped: "
+			<< skippedCount << endl;
 	}
 }
 
@@ -267,8 +349,21 @@ void PatientQueue::nurseMenu(PatientQueue& q)
 			cin.ignore(1000, '\n');
 			cout << "Please enter the patient's name: ";
 			getline(cin, name);
-			cout << "Please enter the patientID: ";
-			getline(cin, patientID);
+			while (true)
+			{
+				cout << "Please enter the patientID: ";
+				getline(cin, patientID);
+
+				if (patientIDExists(patientID))
+				{
+					cout << "[!] Patient ID already exists. Please enter a unique ID."
+						<< endl;
+				}
+				else
+				{
+					break;
+				}
+			}
 			cout << "Please enter the ill condition: ";
 			getline(cin, condition);
 			while (true)
@@ -336,6 +431,20 @@ void PatientQueue::doctorMenu(PatientQueue& q)
 			cout << "Error, please enter a valid number (1-4)!" << endl;
 		}
 	}
+}
+
+bool PatientQueue::patientIDExists(string id)
+{
+	Node* temp = head;
+	while (temp != nullptr)
+	{
+		if (temp->s.getID() == id)
+		{
+			return true;
+		}
+		temp = temp->next;
+	}
+	return false;
 }
 
 PatientQueue::~PatientQueue()

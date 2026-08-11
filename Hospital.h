@@ -30,6 +30,7 @@ private:
 		Node(Patient patient_obj) : s(patient_obj), next(nullptr) {}
 	};
 	Node* head = nullptr;
+	bool patientIDExists(std::string id);
 
 	unsigned long getHash(std::string password);
 
@@ -71,5 +72,4 @@ public:
 	~PatientQueue();
 };
 
-#endif // !HOSPITAL_H
-
+#endif
