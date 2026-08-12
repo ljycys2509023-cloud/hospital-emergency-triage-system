@@ -288,6 +288,9 @@ void PatientQueue::log(PatientQueue& q)
 	string inputUser;
 	string inputPass;
 
+	const int MAX_ATTEMPTS = 5;
+	const auto LOCKOUT_DURATION = std::chrono::seconds(30);
+
 	while (true)
 	{
 		cout << "\n" << string(20, '#') << " SYSTEM LOGIN " << string(20, '#') << endl;
@@ -306,11 +309,25 @@ void PatientQueue::log(PatientQueue& q)
 		{
 			if (database[i].username == inputUser)//find the name, then calculate the password's hashvalue
 			{
+				if (database[i].failedAttempts >= MAX_ATTEMPTS)
+				{
+					if (std::chrono::steady_clock::now() < database[i].lockoutUntil)
+					{
+						break;
+					}
+					else
+					{
+						database[i].failedAttempts = 0;
+					}
+				}
+
 				unsigned long inputHash = getHash(inputPass);
 
 				//compare the two hashvalue
 				if (inputHash == database[i].passwordHash)
 				{
+					database[i].failedAttempts = 0;
+
 					cout << "\n[!] Login Successful! Welcome " << inputUser << "!" << endl;
 					loginSuccess = true;
 
@@ -318,6 +335,16 @@ void PatientQueue::log(PatientQueue& q)
 					if (database[i].role == "nurse") { nurseMenu(q); }
 					if (database[i].role == "doctor") { doctorMenu(q); }
 				}
+				else
+				{
+					database[i].failedAttempts++;
+					if (database[i].failedAttempts == MAX_ATTEMPTS)
+					{
+						database[i].lockoutUntil =
+							std::chrono::steady_clock::now() + LOCKOUT_DURATION;
+					}
+				}
+
 				break;
 			}
 		}
@@ -332,7 +359,7 @@ void PatientQueue::log(PatientQueue& q)
 void PatientQueue::nurseMenu(PatientQueue& q)
 {
 	int choice;
-	string name, patientID, condition;
+	string name, patientID, condition, ageInput, priorityInput;
 	int age, priorityLevel;
 	while (true)
 	{
@@ -347,13 +374,50 @@ void PatientQueue::nurseMenu(PatientQueue& q)
 		else if (choice == 2)
 		{
 			cin.ignore(1000, '\n');
-			cout << "Please enter the patient's name: ";
-			getline(cin, name);
+
+			while (true)
+			{
+				cout << "Please enter the patient's name: ";
+				getline(cin, name);
+
+				if (name.empty())
+				{
+					cout << "[!] Patient name cannot be empty. Please enter a valid name."
+						<< endl;
+
+					continue;
+				}
+
+				if (name.find('|') != string::npos)
+				{
+					cout << "[!] Patient name cannot contain '|'. Please enter a valid name."
+						<< endl;
+
+					continue;
+				}
+
+				break;
+			}
+
 			while (true)
 			{
 				cout << "Please enter the patientID: ";
 				getline(cin, patientID);
 
+				if (patientID.empty())
+				{
+					cout << "[!] Patient ID cannot be empty. Please enter a valid ID."
+						<< endl;
+
+					continue;
+				}
+				if (patientID.find('|') != string::npos)
+				{
+					cout << "[!] Patient ID cannot contain '|'. Please enter a valid ID."
+						<< endl;
+
+					continue;
+				}
 				if (patientIDExists(patientID))
 				{
 					cout << "[!] Patient ID already exists. Please enter a unique ID."
@@ -364,30 +428,101 @@ void PatientQueue::nurseMenu(PatientQueue& q)
 					break;
 				}
 			}
-			cout << "Please enter the ill condition: ";
-			getline(cin, condition);
+
+			while (true)
+			{
+				cout << "Please enter the ill condition: ";
+				getline(cin, condition);
+
+				if (condition.empty())
+				{
+					cout << "[!] Patient ill condition cannot be empty. Please enter a valid ill condition."
+						<< endl;
+
+					continue;
+				}
+
+				if (condition.find('|') != string::npos)
+				{
+					cout << "[!] Patient ill condition cannot contain '|'. Please enter a valid ill condition."
+						<< endl;
+
+					continue;
+				}
+
+				break;
+			}
+
 			while (true)
 			{
 				cout << "Please enter age: ";
-				if (cin >> age && age >= 0 && age <= 150)
+				getline(cin, ageInput);
+
+				try
 				{
+					size_t agePos;
+					age = stoi(ageInput, &agePos);
+
+					if (agePos != ageInput.length())
+					{
+						cout << "[!] Invalid age format. Please enter a whole number (0-150)."
+							<< endl;
+
+						continue;
+					}
+
+					if (age < 0 || age > 150)
+					{
+						cout << "[!] Invalid age. Please enter a number (0-150)."
+							<< endl;
+
+						continue;
+					}
+
 					break;
 				}
-				else
+				catch (const exception&)
 				{
-					cout << "[!] Invalid age. Please enter a number (0-150)." << endl;
-					cin.clear();
-					cin.ignore(1000, '\n');
+					cout << "[!] Invalid age format. Please enter a whole number (0-150)."
+						<< endl;
 				}
 			}
-			cout << "Please enter priority level (1-3): ";
-			while (!(cin >> priorityLevel) || priorityLevel < 1 || priorityLevel>3)
+
+			while (true)
 			{
-				cout << "[!] Invalid input. Please enter a number (1-3): ";
-				cin.clear();
-				cin.ignore(1000, '\n');
+				cout << "Please enter priority level (1-3): ";
+				getline(cin, priorityInput);
+
+				try
+				{
+					size_t priorityPos;
+					priorityLevel = stoi(priorityInput, &priorityPos);
+
+					if (priorityPos != priorityInput.length())
+					{
+						cout << "[!] Invalid priority level format. Please enter a whole number (1-3)."
+							<< endl;
+
+						continue;
+					}
+
+					if (priorityLevel < 1 || priorityLevel > 3)
+					{
+						cout << "[!] Invalid priority level. Please enter a number (1-3)."
+							<< endl;
+
+						continue;
+					}
+
+					break;
+				}
+				catch (const exception&)
+				{
+					cout << "[!] Invalid priority level format. Please enter a whole number (1-3)."
+						<< endl;
+				}
 			}
-			cin.ignore(1000, '\n');
+
 			q.enqueue(Patient(patientID, name, age, condition, priorityLevel));
 			cout << "The patient is added successfully" << endl;
 		}

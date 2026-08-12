@@ -1,6 +1,7 @@
 #ifndef HOSPITAL_H
 #define HOSPITAL_H
 
+#include<chrono>
 #include<string>
 
 class Patient
@@ -39,6 +40,8 @@ private:
 		std::string username;
 		unsigned long passwordHash = 0;
 		std::string role;
+		int failedAttempts = 0;
+		std::chrono::steady_clock::time_point lockoutUntil;
 	};
 	//set up a small database
 	account database[2];
