@@ -39,3 +39,7 @@
 
 # debug information files
 *.dwo
+
+# Runtime persistence recovery files
+*.tmp
+*.bak

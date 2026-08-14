@@ -9,14 +9,20 @@ int main() {
 	PatientQueue p;
 
 	ifstream testFile("patient.txt");
-	if (testFile.good())
+	ifstream backupFile("patient.txt.bak");
+
+	bool hasPrimaryFile = testFile.good();
+	bool hasBackupFile = backupFile.good();
+
+	testFile.close();
+	backupFile.close();
+
+	if (hasPrimaryFile || hasBackupFile)
 	{
-		testFile.close();
 		p.loadFromFile("patient.txt");
 	}
 	else
 	{
-		testFile.close();
 		p.enqueue(Patient("P001", "Ahmad", 25, "Heart Attack", 1));
 		p.enqueue(Patient("P002", "Siti", 40, "Common Cold", 3));
 		p.enqueue(Patient("P003", "John", 60, "Severe Asthma", 2));

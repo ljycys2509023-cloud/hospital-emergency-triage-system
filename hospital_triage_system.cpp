@@ -4,6 +4,7 @@
 #include<iomanip>
 #include<fstream>
 #include<sstream>
+#include<cstdio>
 
 using namespace std;
 
@@ -148,7 +149,10 @@ void PatientQueue::searchByID(string id)
 
 void PatientQueue::saveToFile(string filename)
 {
-	ofstream outFile(filename);
+	string tempFilename = filename + ".tmp";
+	string backupFilename = filename + ".bak";
+
+	ofstream outFile(tempFilename);
 
 	if (!outFile)
 	{
@@ -168,12 +172,101 @@ void PatientQueue::saveToFile(string filename)
 		temp = temp->next;
 	}
 
+	outFile.flush();
+
+	if (!outFile)
+	{
+		cout << "[!] Error: Failed while writing patient data." << endl;
+		outFile.close();
+		return;
+	}
+
 	outFile.close();
-	cout << "[!]The patient queue saved to file successfully" << endl;
+
+	if (!outFile)
+	{
+		cout << "[!] Error: Failed to finalize patient data file." << endl;
+		return;
+	}
+
+	bool originalFileExists = false;
+
+	ifstream originalFile(filename);
+
+	if (originalFile)
+	{
+		originalFileExists = true;
+	}
+
+	originalFile.close();
+
+	if (originalFileExists)
+	{
+		std::remove(backupFilename.c_str());
+
+		if (std::rename(filename.c_str(), backupFilename.c_str()) != 0)
+		{
+			cout << "[!] Error: Unable to create backup of existing patient data."
+				<< endl;
+
+			std::remove(tempFilename.c_str());
+			return;
+		}
+	}
+
+	if (std::rename(tempFilename.c_str(), filename.c_str()) != 0)
+	{
+		cout << "[!] Error: Unable to replace patient data file." << endl;
+
+		if (originalFileExists)
+		{
+			if (std::rename(backupFilename.c_str(), filename.c_str()) != 0)
+			{
+				cout << "[!] Critical Error: Failed to restore backup patient data."
+					<< endl;
+			}
+			else
+			{
+				cout << "[!] Previous patient data restored successfully."
+					<< endl;
+			}
+		}
+
+		return;
+	}
+
+	cout << "[!] The patient queue saved to file successfully." << endl;
 }
 
 void PatientQueue::loadFromFile(string filename)
 {
+	string backupFilename = filename + ".bak";
+
+	ifstream primaryCheck(filename);
+	bool primaryFileExists = static_cast<bool>(primaryCheck);
+	primaryCheck.close();
+
+	if (!primaryFileExists)
+	{
+		ifstream backupCheck(backupFilename);
+		bool backupFileExists = static_cast<bool>(backupCheck);
+		backupCheck.close();
+
+		if (backupFileExists)
+		{
+			if (std::rename(backupFilename.c_str(), filename.c_str()) == 0)
+			{
+				cout << "[!] Recovery: Patient data restored from backup."
+					<< endl;
+			}
+			else
+			{
+				cout << "[!] Error: Backup patient data exists but could not be restored."
+					<< endl;
+			}
+		}
+	}
+
 	ifstream infile(filename);
 
 	if (!infile)
