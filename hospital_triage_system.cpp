@@ -380,19 +380,10 @@ void PatientQueue::nurseMenu(PatientQueue& q)
 				cout << "Please enter the patient's name: ";
 				getline(cin, name);
 
-				if (name.empty())
+				if (!isValidTextField(name))
 				{
-					cout << "[!] Patient name cannot be empty. Please enter a valid name."
+					cout << "[!] Invalid patient name. Name cannot be empty or contain'|'."
 						<< endl;
-
-					continue;
-				}
-
-				if (name.find('|') != string::npos)
-				{
-					cout << "[!] Patient name cannot contain '|'. Please enter a valid name."
-						<< endl;
-
 					continue;
 				}
 
@@ -404,20 +395,13 @@ void PatientQueue::nurseMenu(PatientQueue& q)
 				cout << "Please enter the patientID: ";
 				getline(cin, patientID);
 
-				if (patientID.empty())
+				if (!isValidTextField(patientID))
 				{
-					cout << "[!] Patient ID cannot be empty. Please enter a valid ID."
+					cout << "[!] Invalid patient ID. ID cannot be empty or contain '|'. Please enter a valid ID."
 						<< endl;
-
 					continue;
 				}
-				if (patientID.find('|') != string::npos)
-				{
-					cout << "[!] Patient ID cannot contain '|'. Please enter a valid ID."
-						<< endl;
 
-					continue;
-				}
 				if (patientIDExists(patientID))
 				{
 					cout << "[!] Patient ID already exists. Please enter a unique ID."
@@ -434,19 +418,10 @@ void PatientQueue::nurseMenu(PatientQueue& q)
 				cout << "Please enter the ill condition: ";
 				getline(cin, condition);
 
-				if (condition.empty())
+				if (!isValidTextField(condition))
 				{
-					cout << "[!] Patient ill condition cannot be empty. Please enter a valid ill condition."
+					cout << "[!] Invalid patient condition. Condition cannot be empty or contain '|'."
 						<< endl;
-
-					continue;
-				}
-
-				if (condition.find('|') != string::npos)
-				{
-					cout << "[!] Patient ill condition cannot contain '|'. Please enter a valid ill condition."
-						<< endl;
-
 					continue;
 				}
 
@@ -458,34 +433,14 @@ void PatientQueue::nurseMenu(PatientQueue& q)
 				cout << "Please enter age: ";
 				getline(cin, ageInput);
 
-				try
+				if (!parseIntegerInRange(ageInput, 0, 150, age))
 				{
-					size_t agePos;
-					age = stoi(ageInput, &agePos);
-
-					if (agePos != ageInput.length())
-					{
-						cout << "[!] Invalid age format. Please enter a whole number (0-150)."
-							<< endl;
-
-						continue;
-					}
-
-					if (age < 0 || age > 150)
-					{
-						cout << "[!] Invalid age. Please enter a number (0-150)."
-							<< endl;
-
-						continue;
-					}
-
-					break;
-				}
-				catch (const exception&)
-				{
-					cout << "[!] Invalid age format. Please enter a whole number (0-150)."
+					cout << "[!] Invalid age. Please enter a whole number (0-150)."
 						<< endl;
+					continue;
 				}
+
+				break;
 			}
 
 			while (true)
@@ -493,34 +448,14 @@ void PatientQueue::nurseMenu(PatientQueue& q)
 				cout << "Please enter priority level (1-3): ";
 				getline(cin, priorityInput);
 
-				try
+				if (!parseIntegerInRange(priorityInput, 1, 3, priorityLevel))
 				{
-					size_t priorityPos;
-					priorityLevel = stoi(priorityInput, &priorityPos);
-
-					if (priorityPos != priorityInput.length())
-					{
-						cout << "[!] Invalid priority level format. Please enter a whole number (1-3)."
-							<< endl;
-
-						continue;
-					}
-
-					if (priorityLevel < 1 || priorityLevel > 3)
-					{
-						cout << "[!] Invalid priority level. Please enter a number (1-3)."
-							<< endl;
-
-						continue;
-					}
-
-					break;
-				}
-				catch (const exception&)
-				{
-					cout << "[!] Invalid priority level format. Please enter a whole number (1-3)."
+					cout << "[!] Invalid priority level. Please enter a whole number (1-3)."
 						<< endl;
+					continue;
 				}
+				
+				break;
 			}
 
 			q.enqueue(Patient(patientID, name, age, condition, priorityLevel));
@@ -580,6 +515,46 @@ bool PatientQueue::patientIDExists(string id)
 		temp = temp->next;
 	}
 	return false;
+}
+
+bool PatientQueue::isValidTextField(const string& value)
+{
+	if (value.empty())
+	{
+		return false;
+	}
+
+	if (value.find('|') != string::npos)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool PatientQueue::parseIntegerInRange(const string& input, int minValue, int maxValue, int& result)
+{
+	try
+	{
+		size_t pos;
+		int parsedValue = stoi(input, &pos);
+		if (pos != input.length())
+		{
+			return false;
+		}
+
+		if (parsedValue<minValue || parsedValue>maxValue)
+		{
+			return false;
+		}
+
+		result = parsedValue;
+		return true;
+	}
+	catch (const exception&)
+	{
+		return false;
+	}
 }
 
 PatientQueue::~PatientQueue()

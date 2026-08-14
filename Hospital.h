@@ -32,6 +32,8 @@ private:
 	};
 	Node* head = nullptr;
 	bool patientIDExists(std::string id);
+	bool isValidTextField(const std::string& value);
+	bool parseIntegerInRange(const std::string& input, int minValue, int maxValue, int& result);
 
 	unsigned long getHash(std::string password);
 
