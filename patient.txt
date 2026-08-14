@@ -4,4 +4,4 @@ P003|John|60|Severe Asthma|2
 P005|Zali|33|Abdominal Pain|2
 P002|Siti|40|Common Cold|3
 P006|Tan|55|Skin Rash|3
-P007|Han|24|feel sad|3
+P007|Han|24|Feel Sad|3
