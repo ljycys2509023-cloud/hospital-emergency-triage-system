@@ -5,6 +5,7 @@
 #include<fstream>
 #include<sstream>
 #include<cstdio>
+#include<ctime>
 
 using namespace std;
 
@@ -425,8 +426,8 @@ void PatientQueue::log(PatientQueue& q)
 					loginSuccess = true;
 
 					//open the role menu
-					if (database[i].role == "nurse") { nurseMenu(q); }
-					if (database[i].role == "doctor") { doctorMenu(q); }
+					if (database[i].role == "nurse") { nurseMenu(q, inputUser); }
+					if (database[i].role == "doctor") { doctorMenu(q, inputUser); }
 				}
 				else
 				{
@@ -449,7 +450,7 @@ void PatientQueue::log(PatientQueue& q)
 	}
 }
 
-void PatientQueue::nurseMenu(PatientQueue& q)
+void PatientQueue::nurseMenu(PatientQueue& q, const string& actor)
 {
 	int choice;
 	string name, patientID, condition, ageInput, priorityInput;
@@ -553,6 +554,8 @@ void PatientQueue::nurseMenu(PatientQueue& q)
 
 			q.enqueue(Patient(patientID, name, age, condition, priorityLevel));
 			cout << "The patient is added successfully" << endl;
+
+			writeAuditLog(actor, "NURSE", "REGISTER", patientID);
 		}
 		else if (choice == 3)
 		{
@@ -574,7 +577,7 @@ void PatientQueue::nurseMenu(PatientQueue& q)
 	}
 }
 
-void PatientQueue::doctorMenu(PatientQueue& q)
+void PatientQueue::doctorMenu(PatientQueue& q, const string& actor)
 {
 	int choice;
 	while (true)
@@ -583,7 +586,16 @@ void PatientQueue::doctorMenu(PatientQueue& q)
 		cout << "1. Treat Next Patient\n2. Preview Next in Line\n3. View Full Queue\n4. Logout" << endl;
 		cout << "Selection: ";
 		cin >> choice;
-		if (choice == 1) { q.dequeue(); }
+		if (choice == 1)
+		{
+			Patient treatedPatient = q.dequeue();
+
+			if (treatedPatient.getID() != "0")
+			{
+				writeAuditLog(actor, "DOCTOR", "TREAT", treatedPatient.getID());
+				writeTreatmentHistory(treatedPatient, actor);
+			}
+		}
 		else if (choice == 2) { q.peekFront(); }
 		else if (choice == 3) { q.displayQueue(); }
 		else if (choice == 4) { break; }
@@ -647,6 +659,101 @@ bool PatientQueue::parseIntegerInRange(const string& input, int minValue, int ma
 	catch (const exception&)
 	{
 		return false;
+	}
+}
+
+string PatientQueue::getCurrentTimestamp()
+{
+	time_t currentTime = time(nullptr);
+	tm localTime{};
+	if (localtime_s(&localTime, &currentTime) != 0)
+	{
+		cout << "[!] Error: Unable to obtain local time." << endl;
+		return " ";
+	}
+
+	stringstream timestamp;
+
+	timestamp << put_time(&localTime, "%Y-%m-%d %H:%M:%S");
+
+	return timestamp.str();
+}
+
+void PatientQueue::writeAuditLog(const string& actor, const string& role, const string& action, const string& patientID)
+{
+	string formattedTime = getCurrentTimestamp();
+
+	if (formattedTime.empty())
+	{
+		return;
+	}
+
+	ofstream logFile("audit.log", ios::app);
+
+	if (!logFile)
+	{
+		cout << "[!] Error: Unable to open audit log file." << endl;
+		return;
+	}
+
+	logFile << "[" << formattedTime << "] "
+		<< actor << " | "
+		<< role << " | "
+		<< action << " | "
+		<< patientID << endl;
+
+	if (!logFile)
+	{
+		cout << "[!] Error: Failed to finalize audit log file." << endl;
+		return;
+	}
+
+	logFile.close();
+
+	if (!logFile)
+	{
+		cout << "[!] Error: Failed while writing audit log." << endl;
+		return;
+	}
+}
+
+void PatientQueue::writeTreatmentHistory(Patient patient, const string& doctor)
+{
+	string formattedTime = getCurrentTimestamp();
+
+	if (formattedTime.empty())
+	{
+		return;
+	}
+
+	ofstream historyFile("treatment_history.log", ios::app);
+
+	if (!historyFile)
+	{
+		cout << "Error: Unable to open treatment history file." << endl;
+		return;
+	}
+
+	historyFile << formattedTime << "|"
+		<< doctor << "|"
+		<< patient.getID() << "|"
+		<< patient.getName() << "|"
+		<< patient.getAge() << "|"
+		<< patient.getCondition() << "|"
+		<< patient.getPriorityLevel() << endl;
+
+	if (!historyFile)
+	{
+		cout << "[!] Error: Failed while writing treatment history." << endl;
+		return;
+	}
+
+	historyFile.close();
+
+	if (!historyFile)
+	{
+		cout << "[!] Error: Failed to finalize treatment history file." << endl;
+		return;
 	}
 }
 

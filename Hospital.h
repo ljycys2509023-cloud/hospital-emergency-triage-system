@@ -35,6 +35,12 @@ private:
 	bool isValidTextField(const std::string& value);
 	bool parseIntegerInRange(const std::string& input, int minValue, int maxValue, int& result);
 
+	std::string getCurrentTimestamp();
+
+	void writeAuditLog(const std::string& actor, const std::string& role, const std::string& action, const std::string& patientID);
+
+	void writeTreatmentHistory(Patient patient, const std::string& doctor);
+
 	unsigned long getHash(std::string password);
 
 	struct account
@@ -66,9 +72,9 @@ public:
 
 	void log(PatientQueue& q);
 
-	void nurseMenu(PatientQueue& q);
+	void nurseMenu(PatientQueue& q, const std::string& actor);
 
-	void doctorMenu(PatientQueue& q);
+	void doctorMenu(PatientQueue& q, const std::string& actor);
 
 	void saveToFile(std::string filename);
 

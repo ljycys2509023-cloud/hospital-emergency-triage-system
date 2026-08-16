@@ -43,3 +43,7 @@
 # Runtime persistence recovery files
 *.tmp
 *.bak
+
+# Runtime log files
+audit.log
+treatment_history.log
