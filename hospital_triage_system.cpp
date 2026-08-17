@@ -132,6 +132,132 @@ void PatientQueue::displayQueue()
 	cout << string(80, '=') << endl;
 }
 
+PatientQueue::QueueStatistics PatientQueue::calculateQueueStatistics()
+{
+	QueueStatistics stats;
+	int totalAge = 0;
+
+	Node* temp = head;
+
+	while (temp != NULL)
+	{
+		stats.totalPatients++;
+		totalAge += temp->s.getAge();
+
+		if (temp->s.getPriorityLevel() == 1)
+		{
+			stats.criticalCount++;
+		}
+		else if (temp->s.getPriorityLevel() == 2)
+		{
+			stats.moderateCount++;
+		}
+		else if (temp->s.getPriorityLevel() == 3)
+		{
+			stats.stableCount++;
+		}
+
+		temp = temp->next;
+	}
+
+	if (stats.totalPatients > 0)
+	{
+		stats.averageAge =
+			static_cast<double>(totalAge) / stats.totalPatients;
+
+		stats.criticalPercentage =
+			static_cast<double>(stats.criticalCount) / stats.totalPatients * 100.0;
+
+		stats.moderatePercentage =
+			static_cast<double>(stats.moderateCount) / stats.totalPatients * 100.0;
+
+		stats.stablePercentage =
+			static_cast<double>(stats.stableCount) / stats.totalPatients * 100.0;
+	}
+
+	return stats;
+}
+
+void PatientQueue::displayQueueStatistics()
+{
+	QueueStatistics stats = calculateQueueStatistics();
+
+	cout << "===== QUEUE STATISTICS ===== " << endl;
+	cout << "Total Patients: " << stats.totalPatients << endl;
+	cout << "Critical (Priority 1): " << stats.criticalCount << endl;
+	cout << "Moderate (Priority 2): " << stats.moderateCount << endl;
+	cout << "Stable (Priority 3): " << stats.stableCount << endl;
+	cout << "Average Patient Age: "
+		<< fixed << setprecision(1) << stats.averageAge << endl;
+	cout << "Critical Percentage: "
+		<< fixed << setprecision(1) << stats.criticalPercentage << "%" << endl;
+
+	cout << "Moderate Percentage: "
+		<< fixed << setprecision(1) << stats.moderatePercentage << "%" << endl;
+
+	cout << "Stable Percentage: "
+		<< fixed << setprecision(1) << stats.stablePercentage << "%" << endl;
+}
+
+void PatientQueue::saveQueueReport()
+{
+	QueueStatistics stats = calculateQueueStatistics();
+
+	string generatedTime = getCurrentTimestamp();
+
+	if (generatedTime.empty())
+	{
+		return;
+	}
+
+	ofstream reportFile("queue_report.txt");
+
+	if (!reportFile)
+	{
+		cout << "[!] Error: Unable to open queue report file." << endl;
+		return;
+	}
+
+	reportFile << "===== QUEUE STATISTICS REPORT =====" << endl;
+	reportFile << "Generated: " << generatedTime << endl;
+	reportFile << "Total Patients: " << stats.totalPatients << endl;
+	reportFile << "Critical (Priority 1): " << stats.criticalCount << endl;
+	reportFile << "Moderate (Priority 2): " << stats.moderateCount << endl;
+	reportFile << "Stable (Priority 3): " << stats.stableCount << endl;
+
+	reportFile << "Average Patient Age: "
+		<< fixed << setprecision(1)
+		<< stats.averageAge << endl;
+
+	reportFile << "Critical Percentage: "
+		<< fixed << setprecision(1)
+		<< stats.criticalPercentage << "%" << endl;
+
+	reportFile << "Moderate Percentage: "
+		<< fixed << setprecision(1)
+		<< stats.moderatePercentage << "%" << endl;
+
+	reportFile << "Stable Percentage: "
+		<< fixed << setprecision(1)
+		<< stats.stablePercentage << "%" << endl;
+
+	if (!reportFile)
+	{
+		cout << "[!] Error: Failed while writing queue report." << endl;
+		return;
+	}
+
+	reportFile.close();
+
+	if (!reportFile)
+	{
+		cout << "[!] Error: Failed to finalize queue report file." << endl;
+		return;
+	}
+
+	cout << "[!] Queue report saved successfully." << endl;
+}
+
 void PatientQueue::searchByID(string id)
 {
 	Node* temp = head;
@@ -458,7 +584,7 @@ void PatientQueue::nurseMenu(PatientQueue& q, const string& actor)
 	while (true)
 	{
 		cout << "\n" << string(20, '-') << " NURSE WORKSTATION " << string(20, '-') << endl;
-		cout << "1. Display All Waiting Patients\n2. Register New Patient Entry\n3. Search Patient by ID\n4. Logout" << endl;
+		cout << "1. Display All Waiting Patients\n2. Register New Patient Entry\n3. Search Patient by ID\n4. View Queue Statistics\n5. Save Queue Report\n6. Logout" << endl;
 		cout << "Selection: ";
 		cin >> choice;
 		if (choice == 1)
@@ -565,6 +691,14 @@ void PatientQueue::nurseMenu(PatientQueue& q, const string& actor)
 		}
 		else if (choice == 4)
 		{
+			q.displayQueueStatistics();
+		}
+		else if (choice == 5)
+		{
+			q.saveQueueReport();
+		}
+		else if (choice == 6)
+		{
 			cout << "Logging out..." << endl;
 			break;
 		}
@@ -572,7 +706,7 @@ void PatientQueue::nurseMenu(PatientQueue& q, const string& actor)
 		{
 			cin.clear();
 			cin.ignore(1000, '\n');
-			cout << "Error, please enter a valid number (1-4)!" << endl;
+			cout << "Error, please enter a valid number (1-6)!" << endl;
 		}
 	}
 }
@@ -583,7 +717,7 @@ void PatientQueue::doctorMenu(PatientQueue& q, const string& actor)
 	while (true)
 	{
 		cout << "\n" << string(20, '+') << " DOCTOR INTERFACE " << string(20, '+') << endl;
-		cout << "1. Treat Next Patient\n2. Preview Next in Line\n3. View Full Queue\n4. Logout" << endl;
+		cout << "1. Treat Next Patient\n2. Preview Next in Line\n3. View Full Queue\n4. View Queue Statistics\n5. Save Queue Report\n6. Logout" << endl;
 		cout << "Selection: ";
 		cin >> choice;
 		if (choice == 1)
@@ -598,12 +732,14 @@ void PatientQueue::doctorMenu(PatientQueue& q, const string& actor)
 		}
 		else if (choice == 2) { q.peekFront(); }
 		else if (choice == 3) { q.displayQueue(); }
-		else if (choice == 4) { break; }
+		else if (choice == 4) { q.displayQueueStatistics(); }
+		else if (choice == 5) { q.saveQueueReport(); }
+		else if (choice == 6) { break; }
 		else
 		{
 			cin.clear();
 			cin.ignore(1000, '\n');
-			cout << "Error, please enter a valid number (1-4)!" << endl;
+			cout << "Error, please enter a valid number (1-6)!" << endl;
 		}
 	}
 }

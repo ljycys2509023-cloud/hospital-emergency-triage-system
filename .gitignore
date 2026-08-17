@@ -47,3 +47,6 @@
 # Runtime log files
 audit.log
 treatment_history.log
+
+#Runtime report files
+queue_report.txt

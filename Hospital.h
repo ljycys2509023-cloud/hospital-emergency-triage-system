@@ -56,6 +56,20 @@ private:
 
 	void setupAccounts();
 
+	struct QueueStatistics
+	{
+		int totalPatients = 0;
+		int criticalCount = 0;
+		int moderateCount = 0;
+		int stableCount = 0;
+
+		double averageAge = 0.0;
+		double criticalPercentage = 0.0;
+		double moderatePercentage = 0.0;
+		double stablePercentage = 0.0;
+	};
+
+	QueueStatistics calculateQueueStatistics();
 
 public:
 	PatientQueue();
@@ -67,6 +81,10 @@ public:
 	void peekFront();
 
 	void displayQueue();
+
+	void displayQueueStatistics();
+
+	void saveQueueReport();
 
 	void searchByID(std::string id);
 
