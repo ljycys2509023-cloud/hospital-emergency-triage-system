@@ -17,12 +17,12 @@ Patient::Patient(string a, string b, int x, string c, int y)
 	condition = c;
 	priorityLevel = y;
 }
-string Patient::getID() { return patientID; }
-string Patient::getName() { return name; }
-int Patient::getAge() { return age; }
-string Patient::getCondition() { return condition; }
-int Patient::getPriorityLevel() { return priorityLevel; }
-void Patient::display()
+string Patient::getID() const { return patientID; }
+string Patient::getName() const { return name; }
+int Patient::getAge() const { return age; }
+string Patient::getCondition() const { return condition; }
+int Patient::getPriorityLevel() const { return priorityLevel; }
+void Patient::display() const
 {
 	cout << left << setw(20) << "Patient ID" << ": " << patientID << endl;
 	cout << left << setw(20) << "Name" << ": " << name << endl;
@@ -45,7 +45,7 @@ PatientQueue::PatientQueue()
 	setupAccounts();
 }
 
-unsigned long PatientQueue::getHash(string password)
+unsigned long PatientQueue::getHash(const string& password)
 {
 	unsigned long hashValue = 5381;
 	for (char c : password)
@@ -68,7 +68,7 @@ void PatientQueue::setupAccounts()
 	database[1].role = "doctor";
 }
 
-void PatientQueue::enqueue(Patient p)
+void PatientQueue::enqueue(const Patient& p)
 {
 	Node* X = new Node(p);
 	if (head == nullptr || p.getPriorityLevel() < head->s.getPriorityLevel())
@@ -101,14 +101,14 @@ Patient PatientQueue::dequeue()
 	return p;
 }
 
-void PatientQueue::peekFront()
+void PatientQueue::peekFront() const
 {
 	if (head == nullptr) { cout << "\n[ NOTICE: No patient waiting ]" << endl; return; }
 	cout << "\n[ NEXT UP FOR TREATMENT ]" << endl;
 	head->s.display();
 }
 
-void PatientQueue::displayQueue()
+void PatientQueue::displayQueue() const
 {
 	if (head == nullptr) { cout << "\n[ NOTICE: Queue is empty ]" << endl; return; }
 	Node* temp = head;
@@ -132,14 +132,14 @@ void PatientQueue::displayQueue()
 	cout << string(80, '=') << endl;
 }
 
-PatientQueue::QueueStatistics PatientQueue::calculateQueueStatistics()
+PatientQueue::QueueStatistics PatientQueue::calculateQueueStatistics() const
 {
 	QueueStatistics stats;
 	int totalAge = 0;
 
 	Node* temp = head;
 
-	while (temp != NULL)
+	while (temp != nullptr)
 	{
 		stats.totalPatients++;
 		totalAge += temp->s.getAge();
@@ -178,7 +178,7 @@ PatientQueue::QueueStatistics PatientQueue::calculateQueueStatistics()
 	return stats;
 }
 
-void PatientQueue::displayQueueStatistics()
+void PatientQueue::displayQueueStatistics() const
 {
 	QueueStatistics stats = calculateQueueStatistics();
 
@@ -199,7 +199,7 @@ void PatientQueue::displayQueueStatistics()
 		<< fixed << setprecision(1) << stats.stablePercentage << "%" << endl;
 }
 
-void PatientQueue::saveQueueReport()
+void PatientQueue::saveQueueReport() const
 {
 	QueueStatistics stats = calculateQueueStatistics();
 
@@ -258,7 +258,7 @@ void PatientQueue::saveQueueReport()
 	cout << "[!] Queue report saved successfully." << endl;
 }
 
-void PatientQueue::searchByID(string id)
+void PatientQueue::searchByID(const string& id)
 {
 	Node* temp = head;
 	while (temp != nullptr)
@@ -288,7 +288,7 @@ void PatientQueue::saveToFile(string filename)
 	}
 
 	Node* temp = head;
-	while (temp != NULL)
+	while (temp != nullptr)
 	{
 		outFile << temp->s.getID() << "|"
 			<< temp->s.getName() << "|"
@@ -744,7 +744,7 @@ void PatientQueue::doctorMenu(PatientQueue& q, const string& actor)
 	}
 }
 
-bool PatientQueue::patientIDExists(string id)
+bool PatientQueue::patientIDExists(const string& id)
 {
 	Node* temp = head;
 	while (temp != nullptr)
@@ -798,7 +798,7 @@ bool PatientQueue::parseIntegerInRange(const string& input, int minValue, int ma
 	}
 }
 
-string PatientQueue::getCurrentTimestamp()
+string PatientQueue::getCurrentTimestamp() const
 {
 	time_t currentTime = time(nullptr);
 	tm localTime{};
@@ -815,7 +815,7 @@ string PatientQueue::getCurrentTimestamp()
 	return timestamp.str();
 }
 
-void PatientQueue::writeAuditLog(const string& actor, const string& role, const string& action, const string& patientID)
+void PatientQueue::writeAuditLog(const string& actor, const string& role, const string& action, const string& patientID) const
 {
 	string formattedTime = getCurrentTimestamp();
 
@@ -853,7 +853,7 @@ void PatientQueue::writeAuditLog(const string& actor, const string& role, const 
 	}
 }
 
-void PatientQueue::writeTreatmentHistory(Patient patient, const string& doctor)
+void PatientQueue::writeTreatmentHistory(const Patient& patient, const string& doctor) const
 {
 	string formattedTime = getCurrentTimestamp();
 
@@ -893,14 +893,21 @@ void PatientQueue::writeTreatmentHistory(Patient patient, const string& doctor)
 	}
 }
 
-PatientQueue::~PatientQueue()
+void PatientQueue::clear()
 {
 	Node* temp = head;
+
 	while (temp != nullptr)
 	{
 		Node* nextNode = temp->next;
 		delete temp;
 		temp = nextNode;
 	}
+
 	head = nullptr;
+}
+
+PatientQueue::~PatientQueue()
+{
+	clear();
 }

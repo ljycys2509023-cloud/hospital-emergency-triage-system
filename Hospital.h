@@ -14,12 +14,12 @@ private:
 	int priorityLevel;
 public:
 	Patient(std::string a, std::string b, int x, std::string c, int y);
-	std::string getID();
-	std::string getName();
-	int getAge();
-	std::string getCondition();
-	int getPriorityLevel();
-	void display();
+	std::string getID() const;
+	std::string getName() const;
+	int getAge() const;
+	std::string getCondition() const;
+	int getPriorityLevel() const;
+	void display() const;
 };
 
 class PatientQueue {
@@ -28,20 +28,22 @@ private:
 	{
 		Patient s;
 		Node* next;
-		Node(Patient patient_obj) : s(patient_obj), next(nullptr) {}
+		Node(const Patient& patient_obj) : s(patient_obj), next(nullptr) {}
 	};
 	Node* head = nullptr;
-	bool patientIDExists(std::string id);
+	bool patientIDExists(const std::string& id);
 	bool isValidTextField(const std::string& value);
 	bool parseIntegerInRange(const std::string& input, int minValue, int maxValue, int& result);
 
-	std::string getCurrentTimestamp();
+	void clear();
 
-	void writeAuditLog(const std::string& actor, const std::string& role, const std::string& action, const std::string& patientID);
+	std::string getCurrentTimestamp() const;
 
-	void writeTreatmentHistory(Patient patient, const std::string& doctor);
+	void writeAuditLog(const std::string& actor, const std::string& role, const std::string& action, const std::string& patientID) const;
 
-	unsigned long getHash(std::string password);
+	void writeTreatmentHistory(const Patient& patient, const std::string& doctor) const;
+
+	unsigned long getHash(const std::string& password);
 
 	struct account
 	{
@@ -69,24 +71,27 @@ private:
 		double stablePercentage = 0.0;
 	};
 
-	QueueStatistics calculateQueueStatistics();
+	QueueStatistics calculateQueueStatistics() const;
 
 public:
 	PatientQueue();
 
-	void enqueue(Patient p);
+	PatientQueue(const PatientQueue&) = delete;
+	PatientQueue& operator=(const PatientQueue&) = delete;
+
+	void enqueue(const Patient& p);
 
 	Patient dequeue();
 
-	void peekFront();
+	void peekFront() const;
 
-	void displayQueue();
+	void displayQueue() const;
 
-	void displayQueueStatistics();
+	void displayQueueStatistics() const;
 
-	void saveQueueReport();
+	void saveQueueReport() const;
 
-	void searchByID(std::string id);
+	void searchByID(const std::string& id);
 
 	void log(PatientQueue& q);
 
