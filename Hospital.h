@@ -89,7 +89,7 @@ public:
 
 	void displayQueueStatistics() const;
 
-	void saveQueueReport() const;
+	void saveQueueReport(const std::string& filename="queue_report.txt") const;
 
 	void searchByID(const std::string& id);
 

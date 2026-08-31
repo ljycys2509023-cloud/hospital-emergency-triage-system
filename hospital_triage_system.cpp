@@ -199,7 +199,7 @@ void PatientQueue::displayQueueStatistics() const
 		<< fixed << setprecision(1) << stats.stablePercentage << "%" << endl;
 }
 
-void PatientQueue::saveQueueReport() const
+void PatientQueue::saveQueueReport(const string& filename) const
 {
 	QueueStatistics stats = calculateQueueStatistics();
 
@@ -210,7 +210,7 @@ void PatientQueue::saveQueueReport() const
 		return;
 	}
 
-	ofstream reportFile("queue_report.txt");
+	ofstream reportFile(filename);
 
 	if (!reportFile)
 	{
