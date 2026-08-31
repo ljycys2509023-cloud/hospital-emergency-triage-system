@@ -219,7 +219,20 @@ void testBackupRecovery()
 
     originalQueue.saveToFile(testFile);
 
-    std::rename(testFile.c_str(), backupFile.c_str());
+    int renameResult = std::rename(
+        testFile.c_str(),
+        backupFile.c_str());
+
+    check(renameResult == 0,
+        "Backup recovery test setup renames primary file");
+
+    if (renameResult != 0)
+    {
+        std::remove(testFile.c_str());
+        std::remove(tempFile.c_str());
+        std::remove(backupFile.c_str());
+        return;
+    }
 
     PatientQueue recoveredQueue;
 
