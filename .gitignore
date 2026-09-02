@@ -50,3 +50,9 @@ treatment_history.log
 
 #Runtime report files
 queue_report.txt
+
+#CMake build output
+build/
+
+# Generated release package
+release-package/

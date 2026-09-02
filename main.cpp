@@ -29,6 +29,7 @@ int main() {
 		p.enqueue(Patient("P004", "Wong", 12, "Head Injury", 1));
 		p.enqueue(Patient("P005", "Zali", 33, "Abdominal Pain", 2));
 		p.enqueue(Patient("P006", "Tan", 55, "Skin Rash", 3));
+		p.enqueue(Patient("P007", "Han", 24, "Feel Sad", 3));
 
 		cout << "[!] Default patient queue initialize successfully." << endl;
 	}
